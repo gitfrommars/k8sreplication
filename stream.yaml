@@ -1,0 +1,217 @@
+###FIRST APPLICATION
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+    creationTimestamp: null
+    labels:
+      io.kompose.service: app1
+    name: app1
+  spec:
+    ports:
+    - name: "8081"
+      port: 8081
+      targetPort: 8081
+    - name: "4010"
+      port: 4010
+      targetPort: 4010
+    - name: "6969"
+      port: 6969
+      targetPort: 6969
+    - name: "8778"
+      port: 8778
+      targetPort: 8778
+    selector:
+      io.kompose.service: app1
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+    creationTimestamp: null
+    labels:
+      io.kompose.service: app1
+    name: app1
+  spec:
+    replicas: 1
+    selector:
+      io.kompose.service: app1
+    strategy:
+      resources: {}
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          io.kompose.service: app1
+          svc: loadbalancerapp
+      spec:
+        containers:
+        - env:
+          - name: variable1
+            value: _@value@_
+          - name: variable2
+            value: _@value2@_
+          - name: variable3
+            value: _@value3@_
+          image: _@RegistryAddress@_/_@RegistryProject@_/_@ImageName@_:_@Tag@_
+          name: stream1
+          ports:
+          - containerPort: 8081
+          - containerPort: 4010
+          - containerPort: 8778
+          - containerPort: 6969
+          resources:
+            requests:
+              cpu: "_@CPU@_"
+              memory: _@MEM@_
+          stdin: true
+          tty: true
+        restartPolicy: Always
+        hostAliases:
+        - hostnames:
+          - "auth.service.local"
+          ip: _@IPFromAuthenticationService@_
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - stream1
+        from:
+          kind: ImageStreamTag
+          name: _@ImageName@_:_@Tag@_
+          namespace: _@RegistryProject@_
+      type: ImageChange
+    status: {}
+###SECOND APPLICATION
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+    creationTimestamp: null
+    labels:
+      io.kompose.service: app2
+    name: app2
+  spec:
+    ports:
+    - name: "8081"
+      port: 8081
+      targetPort: 8081
+    - name: "4010"
+      port: 4010
+      targetPort: 4010
+    - name: "6969"
+      port: 6969
+      targetPort: 6969
+    - name: "8778"
+      port: 8778
+      targetPort: 8778
+    selector:
+      io.kompose.service: app2
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+    creationTimestamp: null
+    labels:
+      io.kompose.service: app2
+    name: app2
+  spec:
+    replicas: 1
+    selector:
+      io.kompose.service: app2
+    strategy:
+      resources: {}
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          io.kompose.service: app2
+          svc: loadbalancerapp
+      spec:
+        containers:
+        - env:
+          - name: variable1
+            value: _@value@_
+          - name: variable2
+            value: _@value2@_
+          - name: variable3
+            value: _@value3@_
+          image: _@RegistryAddress@_/_@RegistryProject@_/_@ImageName@_:_@Tag@_
+          name: stream2
+          ports:
+          - containerPort: 8081
+          - containerPort: 4010
+          - containerPort: 8778
+          - containerPort: 6969
+          resources:
+            requests:
+              cpu: "_@CPU@_"
+              memory: _@MEM@_
+          stdin: true
+          tty: true
+        restartPolicy: Always
+        hostAliases:
+        - hostnames:
+          - "auth.valebroker.local"
+          ip: _@ValemobiDdsAuthIp@_
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - stream2
+        from:
+          kind: ImageStreamTag
+          name: _@ImageName@_:_@Tag@_
+          namespace: _@RegistryProject@_
+      type: ImageChange
+  status: {}
+#LOADBALANCER FOR THE APPLICATIONS
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+    creationTimestamp: null
+    labels:
+      io.kompose.service: loadbalancerapp
+    name: loadbalancerapp
+  spec:
+    ports:
+    - name: "8081"
+      port: 8081
+      targetPort: 8081
+    - name: "4010"
+      port: 4010
+      targetPort: 4010
+    - name: "6969"
+      port: 6969
+      targetPort: 6969
+    selector:
+      io.kompose.service: loadbalancerapp
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Route
+  metadata:
+    labels:
+      route: _@RouterName@_
+    name: loadbalancerapp
+    spec:
+      host: loadbalancerapp._@Host@_
+      port:
+        targetPort: '8081'
+      to:
+        kind: Service
+        name: loadbalancerapp
+        weight: 100
+      wildcardPolicy: None
+kind: List
+metadata: {}
