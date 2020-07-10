@@ -85,7 +85,7 @@ items:
         restartPolicy: Always
         hostAliases:
         - hostnames:
-          - "auth.service.local"
+          - "xxxxx"
           ip: _@IPFromAuthenticationService@_
     test: false
     triggers:
@@ -185,8 +185,8 @@ items:
         restartPolicy: Always
         hostAliases:
         - hostnames:
-          - "auth.valebroker.local"
-          ip: _@ValemobiDdsAuthIp@_
+          - "xxxxx"
+          ip: _@p@_
     test: false
     triggers:
     - type: ConfigChange
