@@ -11,18 +11,9 @@ items:
     name: app1
   spec:
     ports:
-    - name: "8081"
-      port: 8081
-      targetPort: 8081
-    - name: "4010"
-      port: 4010
-      targetPort: 4010
-    - name: "6969"
-      port: 6969
-      targetPort: 6969
-    - name: "8778"
-      port: 8778
-      targetPort: 8778
+    - name: "8080"
+      port: 8080
+      targetPort: 8080
     selector:
       io.kompose.service: app1
   status:
